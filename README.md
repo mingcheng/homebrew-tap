@@ -51,8 +51,11 @@ Formulae are stored in [Formula](Formula/). When adding or updating a package:
 
 1. Verify the upstream release and set the version, download URLs, SHA-256 checksums, and dependencies.
 2. Add or update installation logic and tests, and update the package list above.
-3. Run `brew style`, verify installation, and run `brew test`. Add or adjust the corresponding
-   checks in [GitHub Actions](.github/workflows/tests.yml).
+3. Declare supported platforms and optionally enable automated updates in
+   [.github/formulae.json](.github/formulae.json), as described below.
+4. Run the script tests, `brew style`, verify installation, and run `brew test`.
+   [GitHub Actions](.github/workflows/tests.yml) discovers formulae automatically;
+   adding a package does not require package-specific workflow commands.
 
 To validate locally, use a working copy with at least one Git commit:
 
@@ -65,8 +68,9 @@ brew test mingcheng/tap/mp3blstr
 
 This clones the local repository and includes only committed changes. Commit subsequent
 changes and update the tap before testing them. If a tap with the same name already exists,
-check its configuration before replacing it. CI currently runs on macOS and Linux,
-covering ARM64 and x86_64. Automated tests do not replace real-world usage checks.
+check its configuration before replacing it. CI supports macOS and Linux on ARM64
+and x86_64, selecting runners from each package's configuration. Automated tests
+do not replace real-world usage checks.
 
 For formulae with `livecheck`, run `brew livecheck mingcheng/tap/<package>` to check
 for upstream releases. This command does not update formulae automatically.

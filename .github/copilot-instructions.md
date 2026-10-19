@@ -8,9 +8,9 @@ source. The current package, `mp3blstr`, provides prebuilt binaries for macOS
 and Linux on ARM64 and x86_64. See [README.md](../README.md) for usage and
 formula maintenance instructions.
 
-[tests.yml](workflows/tests.yml) runs formula style, installation, and tests
-on four runners covering those OS/architecture combinations. It also serves
-as a reusable workflow that accepts a formula artifact.
+[tests.yml](workflows/tests.yml) discovers all formulae recursively and runs
+style, installation, and tests on their configured OS/architecture combinations.
+It also serves as a reusable workflow that accepts a formula artifact.
 
 [update-formulae.yml](workflows/update-formulae.yml) runs daily or manually
 on `main`: test the Python updater, check upstream releases, upload modified
@@ -36,10 +36,16 @@ mingcheng/tap/mp3blstr` to exercise changed installation logic.
 
 Check upstream version discovery with `brew livecheck mingcheng/tap/mp3blstr`.
 
-Run all updater unit tests using the same command as the update workflow:
+Run all configuration and updater unit tests using the same command as CI:
 
 ```sh
 python3 -B -m unittest discover -s .github/scripts -v
+```
+
+Preview the CI matrix without downloading or modifying packages:
+
+```sh
+python3 -B .github/scripts/formula_config.py
 ```
 
 Run one updater test by making the scripts directory importable:
@@ -56,14 +62,15 @@ PYTHONPATH=.github/scripts python3 -B -m unittest -v test_update_formulae.Update
 - Preserve `mp3blstr`'s `mp3blaster` compatibility symlink and corresponding
   conflict declaration. Linux requires `alsa-lib` and installs a desktop
   entry; documentation is installed on both operating systems.
-- The updater's `FORMULAE` mapping in
-  [update_formulae.py](scripts/update_formulae.py) selects supported upstream
-  repositories. Adding a formula also requires reviewing the validation
-  workflow's package-specific commands.
-- Automated updates require stable `vMAJOR.MINOR.PATCH` releases and exactly
-  one matching asset per platform: `darwin_arm64`, `darwin_amd64`,
-  `linux_arm64`, and `linux_amd64`. Asset names follow
-  `<formula>_<version>_<platform>.tar.gz`.
+- [formulae.json](formulae.json) is the shared package configuration, validated
+  by [formula_config.py](scripts/formula_config.py). Add platform and release
+  settings there rather than package-specific Python or workflow branches.
+  Unconfigured formulae are checked on all four platforms; updates are opt-in.
+  Keep Formula paths consistent across discovery, artifact transfer, and publishing.
+- Automated updates require stable numeric `MAJOR.MINOR.PATCH` versions.
+  Tag and per-platform asset templates are configurable; see the
+  [configuration contract](../README.md#package-configuration).
+  Unsupported release providers or Formula layouts remain manually maintained.
 - The updater parses formula text: keep one explicit `version` declaration
   and each `url` immediately followed by its equally indented `sha256`.
   Layout changes must be coordinated with the updater and its tests.
@@ -72,6 +79,8 @@ PYTHONPATH=.github/scripts python3 -B -m unittest -v test_update_formulae.Update
   Equal or older releases leave it unchanged; a version update removes
   `revision`. Preserve failure-without-partial-update behavior.
 - Updater tests use standard-library `unittest`, mocked network responses,
-  and temporary formula files. The updater itself accesses GitHub and edits
+  and temporary formula files. Cover heterogeneous packages, platform subsets,
+  nested paths, and disabled updates when changing shared behavior.
+  The updater itself accesses GitHub and edits
   formulae: `python3 -B .github/scripts/update_formulae.py`. It optionally uses
   `GITHUB_TOKEN`; this command is a maintenance action, not a test.

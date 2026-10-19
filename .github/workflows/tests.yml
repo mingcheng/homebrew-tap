@@ -1,35 +1,85 @@
-name: Test formula
+name: Test formulae
 
 on:
   push:
     branches: [main]
   pull_request:
   workflow_dispatch:
+  workflow_call:
+    inputs:
+      formula-artifact:
+        description: Updated formulae to validate before publishing
+        type: string
+        required: false
+        default: ""
 
 permissions:
   contents: read
 
 jobs:
+  discover:
+    name: Discover formulae
+    runs-on: ubuntu-24.04
+    outputs:
+      matrix: ${{ steps.formulae.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/download-artifact@v4
+        if: inputs.formula-artifact != ''
+        with:
+          name: ${{ inputs.formula-artifact }}
+          path: Formula
+      - name: Build formula matrix
+        id: formulae
+        run: |
+          matrix=$(python3 -B .github/scripts/formula_config.py)
+          printf 'matrix=%s\n' "$matrix" >> "$GITHUB_OUTPUT"
+
+  updater:
+    name: Test updater
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - run: python3 -B -m unittest discover -s .github/scripts -v
+
   test:
-    name: mp3blstr (${{ matrix.os }})
+    name: ${{ matrix.formula }} (${{ matrix.os }})
+    needs: discover
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
-      matrix:
-        os: [macos-15, macos-15-intel, ubuntu-24.04, ubuntu-24.04-arm]
+      matrix: ${{ fromJSON(needs.discover.outputs.matrix) }}
     env:
+      FORMULA: ${{ matrix.formula }}
       HOMEBREW_NO_AUTO_UPDATE: "1"
       HOMEBREW_NO_ANALYTICS: "1"
     steps:
       - uses: actions/checkout@v7
         with:
           persist-credentials: false
+      - uses: actions/download-artifact@v4
+        if: inputs.formula-artifact != ''
+        with:
+          name: ${{ inputs.formula-artifact }}
+          path: Formula
+      - name: Include updated formulae in the local tap
+        if: inputs.formula-artifact != ''
+        run: |
+          git add -- Formula/
+          git -c user.name="github-actions[bot]" \
+            -c user.email="41898282+github-actions[bot]@users.noreply.github.com" \
+            commit -m "test: validate updated formulae" \
+            -m "Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>"
       - uses: Homebrew/actions/setup-homebrew@master
       - name: Tap checked-out revision
         run: brew tap --custom-remote mingcheng/tap "$GITHUB_WORKSPACE"
       - name: Check formula style
-        run: brew style mingcheng/tap/mp3blstr
+        run: brew style "$FORMULA"
       - name: Install
-        run: brew install mingcheng/tap/mp3blstr
+        run: brew install "$FORMULA"
       - name: Test
-        run: brew test mingcheng/tap/mp3blstr
+        run: brew test "$FORMULA"
