@@ -74,7 +74,7 @@ jobs:
             -c user.email="41898282+github-actions[bot]@users.noreply.github.com" \
             commit -m "test: validate updated formulae" \
             -m "Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>"
-      - uses: Homebrew/actions/setup-homebrew@master
+      - uses: Homebrew/actions/setup-homebrew@main
       - name: Tap checked-out revision
         run: brew tap --custom-remote mingcheng/tap "$GITHUB_WORKSPACE"
       - name: Check formula style
