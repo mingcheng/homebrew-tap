@@ -1,6 +1,8 @@
 # mingcheng's Homebrew Tap
 
 A personally maintained collection of [Homebrew](https://brew.sh/) formulae.
+Packages install prebuilt upstream release binaries rather than build from source.
+
 ## Usage
 
 With Homebrew installed, add this tap:
@@ -19,11 +21,11 @@ You can also skip the tap step and install directly using the fully qualified na
 
 ## Packages
 
-| Package                         | Description                                  | Platforms                     | Upstream                                                    |
-| ------------------------------- | -------------------------------------------- | ----------------------------- | ----------------------------------------------------------- |
-| [mp3blstr](Formula/mp3blstr.rb) | Terminal music player inspired by mp3blaster | macOS / Linux, ARM64 / x86_64 | [mingcheng/mp3blstr](https://github.com/mingcheng/mp3blstr) |
-| [simplyddns](Formula/simplyddns.rb) | Flexible dynamic DNS client | macOS / Linux, ARM64 / x86_64 | [mingcheng/simplyddns](https://github.com/mingcheng/simplyddns) |
-| [stupidict](Formula/stupidict.rb) | Terminal-based offline English-Chinese dictionary | macOS / Linux, ARM64 / x86_64 | [mingcheng/stupidict](https://github.com/mingcheng/stupidict) |
+| Package                             | Description                                                       | Platforms                     | Upstream                                                        |
+| ----------------------------------- | ----------------------------------------------------------------- | ----------------------------- | --------------------------------------------------------------- |
+| [mp3blstr](Formula/mp3blstr.rb)     | Terminal music player inspired by mp3blaster                      | macOS / Linux, ARM64 / x86_64 | [mingcheng/mp3blstr](https://github.com/mingcheng/mp3blstr)     |
+| [simplyddns](Formula/simplyddns.rb) | Dynamic DNS client with configurable IP sources and DNS providers | macOS / Linux, ARM64 / x86_64 | [mingcheng/simplyddns](https://github.com/mingcheng/simplyddns) |
+| [stupidict](Formula/stupidict.rb)   | Terminal-based offline English-Chinese dictionary                 | macOS / Linux, ARM64 / x86_64 | [mingcheng/stupidict](https://github.com/mingcheng/stupidict)   |
 
 See each project's upstream documentation for features, usage, and configuration.
 Run `brew info mingcheng/tap/<package>` for version, dependency, and installation details.
@@ -31,11 +33,16 @@ Each package is subject to its upstream license.
 
 ## Updating and Uninstalling
 
-The following commands use `mp3blstr` as an example. Substitute another package name as needed:
+Refresh Homebrew metadata and upgrade an installed package (`mp3blstr` here for example):
 
 ```sh
 brew update
 brew upgrade mingcheng/tap/mp3blstr
+```
+
+To uninstall it:
+
+```sh
 brew uninstall mingcheng/tap/mp3blstr
 ```
 
@@ -48,26 +55,49 @@ Formulae are stored in [Formula](Formula/). When adding or updating a package:
 
 1. Verify the upstream release and set the version, download URLs, SHA-256 checksums, and dependencies.
 2. Add or update installation logic and tests, and update the package list above.
-3. Declare supported platforms and optionally enable automated updates in
-   [.github/formulae.json](.github/formulae.json), as described below.
+3. Configure the validation platforms and optionally enable automated updates in
+   [.github/formulae.json](.github/formulae.json).
 4. Run the script tests, `brew style`, verify installation, and run `brew test`.
    [GitHub Actions](.github/workflows/tests.yml) discovers formulae automatically;
    adding a package does not require package-specific workflow commands.
 
-To validate locally, use a working copy with at least one Git commit:
+Markdown files are checked with [prek](https://prek.j178.dev/) locally and in CI.
+With prek available through mise, install the commit hook and check all tracked
+Markdown files:
 
 ```sh
-brew tap --custom-remote mingcheng/tap /absolute/path/to/homebrew-tap
+prek install
+prek run --all-files
+```
+
+The hook configuration is in [.pre-commit-config.yaml](.pre-commit-config.yaml).
+[.markdownlint-cli2.yaml](.markdownlint-cli2.yaml) keeps the default Markdown rules
+except line length, allowing long links and package tables.
+
+To validate formulae locally, use a working copy with at least one Git commit:
+
+```sh
+brew tap --custom-remote mingcheng/tap "$PWD"
 brew style mingcheng/tap/mp3blstr
 brew install mingcheng/tap/mp3blstr
 brew test mingcheng/tap/mp3blstr
 ```
 
-This clones the local repository and includes only committed changes. Commit subsequent
-changes and update the tap before testing them. If a tap with the same name already exists,
-check its configuration before replacing it. CI supports macOS and Linux on ARM64
-and x86_64, selecting runners from each package's configuration. Automated tests
-do not replace real-world usage checks.
+Homebrew clones the local repository into its tap directory; this does not link
+the working tree, and uncommitted changes are not included. After subsequent
+commits, run `brew update` to refresh that clone. If `mingcheng/tap` is already
+tapped, inspect its remote with `git -C "$(brew --repository mingcheng/tap)"
+remote -v` before changing the setup; the tap command above does not replace an
+existing tap automatically.
+
+If the package is already installed, use `brew reinstall mingcheng/tap/mp3blstr`
+instead of `brew install` to exercise changed installation logic. `brew test`
+runs the formula's `test do` block against the installed package; it does not
+install the modified formula for you. Substitute another package name as needed.
+
+CI runs style, installation, and formula tests on macOS and Linux, using ARM64
+and x86_64 runners selected by the package configuration. Local validation tests
+only the current platform. Automated tests do not replace real-world usage checks.
 
 For formulae with `livecheck`, run `brew livecheck mingcheng/tap/<package>` to check
 for upstream releases. This command does not update formulae automatically.
