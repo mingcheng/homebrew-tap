@@ -149,15 +149,17 @@ class FormulaConfigTests(unittest.TestCase):
         with self.assertRaises(FileNotFoundError):
             load_formulae(self.root)
 
-    def test_checked_in_matrix_covers_existing_package(self):
+    def test_checked_in_matrix_covers_existing_packages(self):
         matrix = build_matrix(load_formulae())
-        self.assertEqual(
-            [row for row in matrix["include"] if row["formula"] == "mingcheng/tap/mp3blstr"],
-            [
-                {"formula": "mingcheng/tap/mp3blstr", "os": runner}
-                for runner in ("macos-15", "macos-15-intel", "ubuntu-24.04-arm", "ubuntu-24.04")
-            ],
-        )
+        for name in ("mp3blstr", "stupidict"):
+            with self.subTest(package=name):
+                self.assertEqual(
+                    [row for row in matrix["include"] if row["formula"] == f"mingcheng/tap/{name}"],
+                    [
+                        {"formula": f"mingcheng/tap/{name}", "os": runner}
+                        for runner in ("macos-15", "macos-15-intel", "ubuntu-24.04-arm", "ubuntu-24.04")
+                    ],
+                )
 
 
 if __name__ == "__main__":
