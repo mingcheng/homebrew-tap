@@ -22,15 +22,11 @@ You can also skip the tap step and install directly using the fully qualified na
 | Package                         | Description                                  | Platforms                     | Upstream                                                    |
 | ------------------------------- | -------------------------------------------- | ----------------------------- | ----------------------------------------------------------- |
 | [mp3blstr](Formula/mp3blstr.rb) | Terminal music player inspired by mp3blaster | macOS / Linux, ARM64 / x86_64 | [mingcheng/mp3blstr](https://github.com/mingcheng/mp3blstr) |
+| [stupidict](Formula/stupidict.rb) | Terminal-based offline English-Chinese dictionary | macOS / Linux, ARM64 / x86_64 | [mingcheng/stupidict](https://github.com/mingcheng/stupidict) |
 
 See each project's upstream documentation for features, usage, and configuration.
 Run `brew info mingcheng/tap/<package>` for version, dependency, and installation details.
 Each package is subject to its upstream license.
-
-**Installation notes:** `mp3blstr` also provides the `mp3blaster` command and conflicts
-with the original `mp3blaster` package. They cannot both be linked; do not force
-file overwrites. Audio playback on Linux requires a working PulseAudio,
-PipeWire (PulseAudio compatibility), or ALSA setup.
 
 ## Updating and Uninstalling
 
