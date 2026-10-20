@@ -151,7 +151,7 @@ class FormulaConfigTests(unittest.TestCase):
 
     def test_checked_in_matrix_covers_existing_packages(self):
         matrix = build_matrix(load_formulae())
-        for name in ("mp3blstr", "stupidict"):
+        for name in ("mp3blstr", "simplyddns", "stupidict"):
             with self.subTest(package=name):
                 self.assertEqual(
                     [row for row in matrix["include"] if row["formula"] == f"mingcheng/tap/{name}"],

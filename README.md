@@ -22,6 +22,7 @@ You can also skip the tap step and install directly using the fully qualified na
 | Package                         | Description                                  | Platforms                     | Upstream                                                    |
 | ------------------------------- | -------------------------------------------- | ----------------------------- | ----------------------------------------------------------- |
 | [mp3blstr](Formula/mp3blstr.rb) | Terminal music player inspired by mp3blaster | macOS / Linux, ARM64 / x86_64 | [mingcheng/mp3blstr](https://github.com/mingcheng/mp3blstr) |
+| [simplyddns](Formula/simplyddns.rb) | Flexible dynamic DNS client | macOS / Linux, ARM64 / x86_64 | [mingcheng/simplyddns](https://github.com/mingcheng/simplyddns) |
 | [stupidict](Formula/stupidict.rb) | Terminal-based offline English-Chinese dictionary | macOS / Linux, ARM64 / x86_64 | [mingcheng/stupidict](https://github.com/mingcheng/stupidict) |
 
 See each project's upstream documentation for features, usage, and configuration.
