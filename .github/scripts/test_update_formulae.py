@@ -159,25 +159,43 @@ class UpdateFormulaTests(unittest.TestCase):
         self.assertGreater(updater.parse_version("1.10.0"), updater.parse_version("1.9.0"))
 
     def test_checked_in_formula_remains_compatible(self):
-        config = load_formulae()["Formula/mp3blstr.rb"]["update"]
-        original = (updater.ROOT / "Formula/mp3blstr.rb").read_text()
-        current = updater.re.search(r'^  version "([^"]+)"$', original, updater.re.MULTILINE)[1]
-        major, minor, patch_version = updater.parse_version(current)
-        version = f"{major}.{minor}.{patch_version + 1}"
-        self.release["tag_name"] = f"v{version}"
-        for asset in self.release["assets"]:
-            for field in ("name", "browser_download_url"):
-                asset[field] = asset[field].replace("1.1.0", version)
-        self.path.write_text(original)
-        self.assertTrue(updater.update_formula(self.path, config))
-        expected = updater.re.sub(
-            r"^  revision \d+\n", "", original.replace(current, version), flags=updater.re.MULTILINE
-        )
-        for number, checksum in enumerate(
-            updater.re.findall(r'sha256 "([0-9a-f]{64})"', original), 1
-        ):
-            expected = expected.replace(checksum, str(number) * 64)
-        self.assertEqual(self.path.read_text(), expected)
+        for relative, entry in load_formulae().items():
+            config = entry["update"]
+            if config is None:
+                continue
+            with self.subTest(formula=relative):
+                original = (updater.ROOT / relative).read_text()
+                current = updater.re.search(
+                    r'^  version "([^"]+)"$', original, updater.re.MULTILINE
+                )[1]
+                major, minor, patch_version = updater.parse_version(current)
+                version = f"{major}.{minor}.{patch_version + 1}"
+                tag = config["tag"].format(version=version)
+                self.path = Path(self.directory.name) / Path(relative).name
+                self.release["tag_name"] = tag
+                self.release["assets"] = []
+                for template in dict.fromkeys(config["assets"].values()):
+                    name = template.format(name=self.path.stem, version=version, tag=tag)
+                    self.release["assets"].append({
+                        "name": name,
+                        "browser_download_url": (
+                            f"https://github.com/{config['repository']}/releases/download/{tag}/{name}"
+                        ),
+                    })
+                self.download.side_effect = [
+                    str(number) * 64 for number in range(1, len(self.release["assets"]) + 1)
+                ]
+                self.path.write_text(original)
+                self.assertTrue(updater.update_formula(self.path, config))
+                expected = updater.re.sub(
+                    r"^  revision \d+\n", "", original.replace(current, version),
+                    flags=updater.re.MULTILINE,
+                )
+                for number, checksum in enumerate(
+                    dict.fromkeys(updater.re.findall(r'sha256 "([0-9a-f]{64})"', original)), 1
+                ):
+                    expected = expected.replace(checksum, str(number) * 64)
+                self.assertEqual(self.path.read_text(), expected)
 
 
 class MultipleFormulaTests(unittest.TestCase):

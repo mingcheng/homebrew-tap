@@ -1,4 +1,17 @@
 {
+  "Formula/aigitcommit.rb": {
+    "platforms": ["darwin_arm64", "darwin_amd64", "linux_arm64", "linux_amd64"],
+    "update": {
+      "repository": "mingcheng/aigitcommit",
+      "tag": "v{version}",
+      "assets": {
+        "darwin_arm64": "{name}-{version}-aarch64-apple-darwin.tar.gz",
+        "darwin_amd64": "{name}-{version}-x86_64-apple-darwin.tar.gz",
+        "linux_arm64": "{name}-{version}-aarch64-unknown-linux-gnu.tar.gz",
+        "linux_amd64": "{name}-{version}-x86_64-unknown-linux-gnu.tar.gz"
+      }
+    }
+  },
   "Formula/mp3blstr.rb": {
     "platforms": ["darwin_arm64", "darwin_amd64", "linux_arm64", "linux_amd64"],
     "update": {
