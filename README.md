@@ -21,12 +21,13 @@ You can also skip the tap step and install directly using the fully qualified na
 
 ## Packages
 
-| Package                               | Description                                                        | Platforms                     | Upstream                                                          |
-| ------------------------------------- | ------------------------------------------------------------------ | ----------------------------- | ----------------------------------------------------------------- |
-| [aigitcommit](Formula/aigitcommit.rb) | Generate Conventional Commit messages using OpenAI-compatible APIs | macOS / Linux, ARM64 / x86_64 | [mingcheng/aigitcommit](https://github.com/mingcheng/aigitcommit) |
-| [mp3blstr](Formula/mp3blstr.rb)       | Terminal music player inspired by mp3blaster                       | macOS / Linux, ARM64 / x86_64 | [mingcheng/mp3blstr](https://github.com/mingcheng/mp3blstr)       |
-| [simplyddns](Formula/simplyddns.rb)   | Dynamic DNS client with configurable IP sources and DNS providers  | macOS / Linux, ARM64 / x86_64 | [mingcheng/simplyddns](https://github.com/mingcheng/simplyddns)   |
-| [stupidict](Formula/stupidict.rb)     | Terminal-based offline English-Chinese dictionary                  | macOS / Linux, ARM64 / x86_64 | [mingcheng/stupidict](https://github.com/mingcheng/stupidict)     |
+| Package                               | Description                                                        | Platforms                         | Upstream                                                          |
+| ------------------------------------- | ------------------------------------------------------------------ | --------------------------------- | ----------------------------------------------------------------- |
+| [aigitcommit](Formula/aigitcommit.rb) | Generate Conventional Commit messages using OpenAI-compatible APIs | macOS / Linux, ARM64 / x86_64     | [mingcheng/aigitcommit](https://github.com/mingcheng/aigitcommit) |
+| [mp3blstr](Formula/mp3blstr.rb)       | Terminal music player inspired by mp3blaster                       | macOS / Linux, ARM64 / x86_64     | [mingcheng/mp3blstr](https://github.com/mingcheng/mp3blstr)       |
+| [simplyddns](Formula/simplyddns.rb)   | Dynamic DNS client with configurable IP sources and DNS providers  | macOS / Linux, ARM64 / x86_64     | [mingcheng/simplyddns](https://github.com/mingcheng/simplyddns)   |
+| [socks5lb](Formula/socks5lb.rb)       | SOCKS5 proxy load balancer with automatic health checks            | macOS 12+ / Linux, ARM64 / x86_64 | [mingcheng/socks5lb](https://github.com/mingcheng/socks5lb)       |
+| [stupidict](Formula/stupidict.rb)     | Terminal-based offline English-Chinese dictionary                  | macOS / Linux, ARM64 / x86_64     | [mingcheng/stupidict](https://github.com/mingcheng/stupidict)     |
 
 See each project's upstream documentation for features, usage, and configuration.
 Run `brew info mingcheng/tap/<package>` for version, dependency, and installation details.

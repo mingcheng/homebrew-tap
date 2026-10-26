@@ -38,6 +38,19 @@
       }
     }
   },
+  "Formula/socks5lb.rb": {
+    "platforms": ["darwin_arm64", "darwin_amd64", "linux_arm64", "linux_amd64"],
+    "update": {
+      "repository": "mingcheng/socks5lb",
+      "tag": "{version}",
+      "assets": {
+        "darwin_arm64": "{name}_{version}_darwin_arm64.tar.gz",
+        "darwin_amd64": "{name}_{version}_darwin_amd64.tar.gz",
+        "linux_arm64": "{name}_{version}_linux_arm64.tar.gz",
+        "linux_amd64": "{name}_{version}_linux_amd64.tar.gz"
+      }
+    }
+  },
   "Formula/stupidict.rb": {
     "platforms": ["darwin_arm64", "darwin_amd64", "linux_arm64", "linux_amd64"],
     "update": {
